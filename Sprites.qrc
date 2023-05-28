@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Sprites/apple.png</file>
+        <file>Sprites/Newtonbase.gif</file>
+        <file>Sprites/Newtonmanzana.gif</file>
+        <file>Sprites/NewtonPrisma.gif</file>
+        <file>Sprites/fondoFisica.gif</file>
+    </qresource>
+</RCC>
