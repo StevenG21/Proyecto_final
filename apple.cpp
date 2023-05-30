@@ -1,11 +1,12 @@
 #include "apple.h"
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
 apple::apple(QObject *parent) : QObject(parent)
 {
-vel = 1.5;
+vel = 2;
 imagen.load(":/Sprites/apple.png");
 
 }
@@ -32,7 +33,7 @@ void apple::actualizar()
 
     if(getposy()>=500-imagen.height()){
         vel = vel*(-1);
-        emit colision();  //Emite una señal si colisiona con el borde
+        emit colision();  //Emite una señal si colisiona con el borde inferior
 
 }
 

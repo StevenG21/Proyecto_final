@@ -10,12 +10,14 @@ CONFIG += c++11
 
 SOURCES += \
     apple.cpp \
+    lapiz.cpp \
     main.cpp \
     mainwindow.cpp \
     newton.cpp
 
 HEADERS += \
     apple.h \
+    lapiz.h \
     mainwindow.h \
     newton.h
 

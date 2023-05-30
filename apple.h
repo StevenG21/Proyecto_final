@@ -30,7 +30,7 @@ public:
 
 
 public slots:
-    void actualizar();
+void actualizar();
 signals:
 void colision();
 };

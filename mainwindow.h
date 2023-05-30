@@ -9,7 +9,9 @@
 #include <QVector>
 #include "newton.h"
 #include "apple.h"
+#include "lapiz.h"
 #include <QPixmap>
+#include <QMovie>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,24 +24,31 @@ class MainWindow : public QMainWindow
 public:
     int v_limit;
     int h_limit;
-void generarmanzana();
+
     void keyPressEvent(QKeyEvent *event);
     MainWindow(QWidget *parent = nullptr);
 
+    void disparar();
 
 
     ~MainWindow();
 
 private:
     QVector<apple*> apples;
+    QVector<lapiz*> pencil;
     QTimer *timer;
+    QTimer *spawnapples;
     Newton *n;
-QPixmap* mapa;
+    QPixmap mapascaled;
+
+QMovie* fondo;
     QGraphicsScene *scene;
     Ui::MainWindow *ui;
 public slots:
        void game();
-     void deleteapple();
+       void generarmanzana();
+       void deleteapple();
+       void refresh();
 
 };
 #endif // MAINWINDOW_H
