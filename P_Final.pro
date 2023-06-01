@@ -1,8 +1,9 @@
 QT += core gui
-
+QT += multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
+
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -13,7 +14,8 @@ SOURCES += \
     lapiz.cpp \
     main.cpp \
     mainwindow.cpp \
-    newton.cpp
+    newton.cpp \
+    nivel1.cpp
 
 HEADERS += \
     apple.h \

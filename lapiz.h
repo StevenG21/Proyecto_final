@@ -13,6 +13,8 @@ class lapiz : public QObject, public QGraphicsItem
     Q_OBJECT
 
 private:
+    float gravedad;
+    float angulo;
     bool reboteSuelo;
     float alturainicial;
     float t=0;
@@ -24,12 +26,18 @@ private:
        float velx;
        float vely;
     QTimer* timer;
+    QTimer *efectos;
 
 public:
     explicit lapiz(QObject *parent = nullptr);
 
        QRectF boundingRect() const;
        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+       void setgravity();
+
+
+
+
 
 
        float getposx(){
@@ -47,8 +55,10 @@ public:
        }
 public slots:
        void actualizar();
-
+private slots:
 signals:
+       void tiempo_efecto();
+       void deltepencil();
 
 };
 

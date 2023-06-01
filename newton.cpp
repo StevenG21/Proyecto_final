@@ -9,7 +9,7 @@ Newton::Newton(QObject *parent) : QObject(parent)
     movie = new QMovie(":/Sprites/base.gif");
  frame = movie->frameCount();
  cout << "frames: "<<frame<<endl;
-    pos = QPointF(20,500-150);
+    pos = QPointF(600,500-150);
     movie->start();
     pixmap = movie->currentPixmap().scaled(alto, ancho);
     a=base;
