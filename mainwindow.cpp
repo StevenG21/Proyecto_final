@@ -68,7 +68,7 @@ scene->addItem(n);
 
 }
 
-void MainWindow::disparar()
+void MainWindow::disparar() //Esta funcion me crea los proyectiles
 {
     lapiz* newpencil = new lapiz;
 
@@ -77,7 +77,7 @@ void MainWindow::disparar()
   //  connect(timer, SIGNAL(timeout()), newpencil, SLOT(actualizar()));
     scene->addItem(newpencil);
     pencil.push_back(newpencil);
-    connect(newpencil, SIGNAL(deltepencil()), this, SLOT(deletepencil()));
+    connect(newpencil, SIGNAL(deltepencil()), this, SLOT(deletepencil())); //Cada señal emitida es conectada a su funcion destructora.
 
     if(efecto==true){
         newpencil->setgravity();
@@ -85,7 +85,7 @@ void MainWindow::disparar()
 
 }
 
-void MainWindow::deleteapple()
+void MainWindow::deleteapple() //Elimina las manzanas
 {
     apple* collidedApple = qobject_cast<apple*>(sender());
     if (collidedApple) {
@@ -94,7 +94,7 @@ void MainWindow::deleteapple()
     }
 }
 
-void MainWindow::deletepencil()
+void MainWindow::deletepencil() //Elimina los proyectiles
 {
     lapiz* collidedpencil = qobject_cast<lapiz*>(sender());
     if (collidedpencil) {
@@ -116,7 +116,7 @@ void MainWindow::puntaje()
 
 }
 
-void MainWindow::cronometro()
+void MainWindow::cronometro() //Tiempo por cada nivel
 {
 
 
@@ -135,7 +135,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QPixmap MainWindow::niveles(int x)
+QPixmap MainWindow::niveles(int x) //Selector de fondo
 {
     switch (x) {
     case 1:
@@ -175,9 +175,9 @@ void MainWindow::game()
                     if (p->collidesWithItem(manzana)) {
                         // Se ha detectado una colisión entre el lápiz y la manzana
                         cout << "Colisiona" << endl;
-                        apples.removeOne(manzana);
+                        apples.removeOne(manzana); //Elimina la manzana colisionada
                         delete manzana;
-                       efecto = true;
+                       efecto = true; //Aplica el efecto
 
                 }
                     else{
@@ -194,7 +194,7 @@ void MainWindow::game()
 
 }
 
-void MainWindow::generarmanzana()
+void MainWindow::generarmanzana() //Genera las manzanas
 {
 
 
@@ -202,13 +202,20 @@ void MainWindow::generarmanzana()
 
         apple* newApple = new apple;
         newApple->setpos(QPointF(random,0));
-        connect(timer, SIGNAL(timeout()), newApple, SLOT(actualizar()));
+        connect(timer, SIGNAL(timeout()), newApple, SLOT(actualizar()));//Timer para actualizar el movimiento de la manzana
         scene->addItem(newApple);
         apples.push_back(newApple);
-        connect(newApple, SIGNAL(colision()), this, SLOT(deleteapple()));
+        connect(newApple, SIGNAL(colision()), this, SLOT(deleteapple())); //Cada manzana generada emite una seña de colision
 
 }
+//Para generar las actividades a destruir copiar el mismo esquema de la clase manzana y su funcion generar.
 
+
+
+
+
+
+//
 
 
 
@@ -219,17 +226,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
     if (event->key() == Qt::Key_F4)
             close();
 if (event->key() == Qt::Key_Space){
+    disparar();
 
-        n->animaciones(2);
+       // n->animaciones(2);
 
         //generarmanzana();
       //  n->animaciones(1);
-
 }
 
-
+//Movimiento del jugador
         if (event->key() == Qt::Key_A) {
-            disparar();
             n->setpos(QPointF(n->getposx()-5,n->getposy()));
         } else if (event->key() == Qt::Key_S) {
             n->setpos(QPointF(n->getposx(),n->getposy()+5));

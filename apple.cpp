@@ -24,14 +24,14 @@ void apple::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     Q_UNUSED(widget);
 }
 
-void apple::actualizar()
+void apple::actualizar() //Mueve las manzanas que caen
 {
     pos.setY(getposy() + vel);
     if(getposy()<=0){
         vel = vel*(-1.1);
     }
 
-    if(getposy()>=500-imagen.height()){
+    if(getposy()>=500-imagen.height()){  //Cuando llegan al borde se eliminan
         vel = vel*(-1);
         emit colision();  //Emite una señal si colisiona con el borde inferior
 

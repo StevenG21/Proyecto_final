@@ -13,7 +13,7 @@ lapiz::lapiz(QObject *parent) : QObject(parent)
     vely = vel * sin(a*M_PI/180.0);
     velx = vel * cos(a*M_PI/180.0);
     timer = new QTimer;
-        connect(timer, SIGNAL(timeout()), this, SLOT(actualizar()));
+        connect(timer, SIGNAL(timeout()), this, SLOT(actualizar())); //Se encarga de actualizar la posicion y el dibujado
         timer->start(4);
 
     imagen.load(":/Sprites/lapiz.png");
@@ -49,7 +49,7 @@ void lapiz::setgravity()
 {
   //  efectos = new QTimer;
 
-    gravedad = gravedad + 1;
+    gravedad = gravedad + 2;
             this->update();
 
    // if(efectos->remainingTime()<=0){
@@ -62,18 +62,18 @@ void lapiz::setgravity()
 
 }
 
-void lapiz::actualizar()
+void lapiz::actualizar()  //Funcion donde se genera el movimiento
 {
 
   pos.setX(posini.x()+velx*t);
-  pos.setY(posini.y()+(vely*t)-0.5*gravedad*pow(t,2));
+  pos.setY(posini.y()+(vely*t)-0.5*gravedad*pow(t,2));  //Tiro parabolico
 
 
 
-  if(pos.y()<0){
+  if(pos.y()<0){    //Rebotes
      t=0;
-     vely = vely*0.6;
-     velx = velx*0.7;
+     vely = vely*0.6; //Coeficiente de rebote
+     velx = velx*0.7; //Coeficiente de friccion
      posini.setY(pos.y());
      posini.setX(pos.x());
 
@@ -81,7 +81,7 @@ void lapiz::actualizar()
 
 
 
-if((velx<=0.1) && (vely<=0.1)){
+if((velx<=0.1) && (vely<=0.1)){  //Detiene el timer y emita una señal para eliminar el proyectil
     timer->stop();
     delete timer;
     emit deltepencil();
