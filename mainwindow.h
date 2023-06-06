@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#include <QString>
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -10,12 +10,15 @@
 #include "newton.h"
 #include "apple.h"
 #include "lapiz.h"
+#include "player.h"
+#include "actividad.h"
 #include <QPixmap>
 #include <QMovie>
-#include <QMouseEvent>
 #include <QTime>
 #include <QDebug>
-
+#include <QMultimedia>
+#include <QMediaPlayer>
+#include <QSoundEffect>
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -30,27 +33,39 @@ public:
     int h_limit;
 
     void keyPressEvent(QKeyEvent *event) ;
-    void mouseMoveEvent(QMouseEvent *event) ;
-    void mousePressEvent(QMouseEvent *event);
-
-
-
+  //  void keyReleaseEvent(QKeyEvent *event);
 
     MainWindow(QWidget *parent = nullptr);
 
-    void disparar();
-
+    void disparar(float,float,int);
 
     ~MainWindow();
 
 private:
+    QString nombrenivel;
+    float ampl,frec;
+    float  t;
+    int potencia;
+QMediaPlayer* nivel1theme;
+QMediaPlayer* s1;
+QSoundEffect *as;
+int numlibros;
+int bookcounter;
+    QVector<apple*> applestoremove;
+    QVector<actividad*> bookstoremove;
+    player *jugador;
     QPixmap fondo;
-    QVector <float> puntos;
+    lapiz *pointerpen;
+    float puntos;
     QVector<apple*> apples;
     QVector<lapiz*> pencil;
+    QVector<actividad*> books;
     QTimer *timer;
+    QTimer *Colitime;
+    QTimer *timerbooks;
     QTimer *spawnapples;
     QTimer *Tiemponivel;
+    QTimer *tdisparo;
     Newton *n;
     QPixmap mapascaled;
     QPixmap niveles(int);
@@ -59,13 +74,20 @@ private:
     int nivel = 1;
     bool efecto;
     float angulo;
-
+    float gravity;
+    void newscene(int x);
+    QGraphicsPixmapItem *gif;
     QGraphicsScene *scene;
+    QGraphicsScene *nivel2;
+    QGraphicsScene *Resultados;
     Ui::MainWindow *ui;
 public slots:
+       void power();
        void game();
        void generarmanzana();
+       void generarlibro();
        void deleteapple();
+       void deletebook();
        void deletepencil();
        void refresh();
        void puntaje();
@@ -76,6 +98,8 @@ public slots:
       // void nivel4();
       // void nivel5();
 
+signals:
+       void changedir();
 
 
 };

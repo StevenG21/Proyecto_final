@@ -6,7 +6,7 @@ using namespace std;
 
 apple::apple(QObject *parent) : QObject(parent)
 {
-vel = 2;
+vel = 1;
 imagen.load(":/Sprites/apple.png");
 
 }
@@ -32,7 +32,7 @@ void apple::actualizar() //Mueve las manzanas que caen
     }
 
     if(getposy()>=500-imagen.height()){  //Cuando llegan al borde se eliminan
-        vel = vel*(-1);
+
         emit colision();  //Emite una señal si colisiona con el borde inferior
 
 }

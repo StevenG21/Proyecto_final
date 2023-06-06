@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include <iostream>
 #include <QRandomGenerator>
-#include <QMultimedia>
+//#include <QMultimedia>
 
 
 using namespace std;
@@ -12,81 +12,69 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 
 {
-
+    nivel=1;
+    puntos = 0;
+    angulo = 0;
+    ampl= 25;
+    frec = 0.6;
+    potencia = 0;
+    gravity = 2.5;
+//pointerpen = new lapiz;
+     gif = new QGraphicsPixmapItem;
+     nivel1theme= new QMediaPlayer;
+     s1 = new QMediaPlayer;
+     as = new QSoundEffect;
+     as->setSource(QUrl("qrc:/Sonidos/applesound.wav"));
+   s1->setMedia(QMediaContent(QUrl("qrc:/Sonidos/soundbook.mp3")));
+   bookcounter = 0;
     efecto=false;
-
-
     ui->setupUi(this);
-
-    scene = new QGraphicsScene(this);
-
-    ui->graphicsView->setMouseTracking(true);
-
 
     h_limit = 800;
     v_limit = 500;
-    scene->setSceneRect(0, 0, h_limit, v_limit);
-    scene->addRect(scene->sceneRect());
-     ui->graphicsView->setScene(scene);
-
-
-    fondo = niveles(1);
-    scene->addPixmap(fondo);
-n = new Newton;
-scene->addItem(n);
-
-
-    //
-
-    //Nivel 1
-
-
-
-
-
-
- //a = new apple;
+//QTimer timer2;
+//tdisparo = new QTimer;
+//connect(tdisparo, SIGNAL(timeout()), this, SLOT(power()));
+  t = 0;
+  Colitime = new QTimer;
+    timerbooks = new QTimer;
     timer = new QTimer;
     Tiemponivel = new QTimer;
     spawnapples = new QTimer;
-    time.setHMS(0,1,0);
+ time.setHMS(0,1,0);
   //  connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
     connect(Tiemponivel, SIGNAL(timeout()), this, SLOT(cronometro()));
-    connect(timer, SIGNAL(timeout()), scene, SLOT(update()));
-    connect(timer, SIGNAL(timeout()), this, SLOT(game()));
+    connect(timerbooks, SIGNAL(timeout()), this, SLOT(generarlibro()));
+
+    connect(Colitime, SIGNAL(timeout()), this, SLOT(game()));
     connect(spawnapples, SIGNAL(timeout()), this, SLOT(generarmanzana()));
-     connect(n, SIGNAL(endframe()),this,SLOT(generarmanzana()));
 
- timer->start(5);
- Tiemponivel->start(1000);
- spawnapples->start(2000);
+  //  connect(ui->graphicsView,SIGNAL(mousePressEvent()),this, SLOT(handleMousePressEvent()));
 
-
-
-
-
-
+newscene(1);
 }
 
-void MainWindow::disparar() //Esta funcion me crea los proyectiles
+void MainWindow::disparar(float x,float y,int vel) //Esta funcion me crea los proyectiles
 {
     lapiz* newpencil = new lapiz;
 
-    newpencil->setpos(QPointF(0,450));
+    newpencil->setpos(QPointF(x,y));
+    newpencil->setangle(angulo);
+    newpencil->setgravity(gravity);
+    newpencil->dir_pencil();
 
   //  connect(timer, SIGNAL(timeout()), newpencil, SLOT(actualizar()));
     scene->addItem(newpencil);
     pencil.push_back(newpencil);
+    connect(timer, SIGNAL(timeout()),newpencil, SLOT(actualizar())); //Movimiento
     connect(newpencil, SIGNAL(deltepencil()), this, SLOT(deletepencil())); //Cada señal emitida es conectada a su funcion destructora.
 
-    if(efecto==true){
-        newpencil->setgravity();
-    }
 
 }
 
-void MainWindow::deleteapple() //Elimina las manzanas
+void MainWindow::deleteapple() //Señal para eliminar manzanas
 {
+
     apple* collidedApple = qobject_cast<apple*>(sender());
     if (collidedApple) {
         apples.removeOne(collidedApple);
@@ -94,7 +82,16 @@ void MainWindow::deleteapple() //Elimina las manzanas
     }
 }
 
-void MainWindow::deletepencil() //Elimina los proyectiles
+void MainWindow::deletebook()// Elimina los libros
+{
+    actividad* collidedbook = qobject_cast<actividad*>(sender());
+    if(collidedbook){
+        books.removeOne(collidedbook);
+        delete collidedbook;
+    }
+}
+
+void MainWindow::deletepencil() //Elimina los proyectiles que emitieron la señal
 {
     lapiz* collidedpencil = qobject_cast<lapiz*>(sender());
     if (collidedpencil) {
@@ -106,22 +103,53 @@ void MainWindow::deletepencil() //Elimina los proyectiles
 void MainWindow::refresh()
 {
 
-      //  this->update();
-
+    mapascaled = movie->currentPixmap().scaled(h_limit, v_limit);
+    gif->setPixmap(mapascaled);
 }
 
 void MainWindow::puntaje()
 {
-    scene->removeItem(n);
+  //  scene->removeItem(n);
 
 }
 
 void MainWindow::cronometro() //Tiempo por cada nivel
 {
 
-
-   ui->cronometro->setText(time.toString("m:ss"));
     time = time.addSecs(-1);
+     ui->cronometro->setText(time.toString("m:ss"));
+
+    if(time.toString("m:ss") == "0:00"){
+        timer-> stop();
+        bookcounter = 0;
+        qDebug() << "Se acabo el tiempo";
+        nivel ++;
+     disconnect(timer, SIGNAL(timeout()), scene, SLOT(update()));
+     scene->removeItem(gif);
+         delete jugador;
+         delete scene;
+         delete movie;
+
+        nivel1theme->stop();
+        ui->nivelname->setHidden(false);
+
+        ui->nota->setHidden(false);
+        ui->textonota->setHidden(false);
+        Tiemponivel->stop();
+        spawnapples->stop();
+        timerbooks->stop();
+        Colitime->stop();
+        timer->stop();
+
+        time.setHMS(0,1,0);
+        ui->nivelname->setText(nombrenivel);
+        QString nota = QString::number(puntos);
+         ui->nota->setText(nota);
+
+
+
+
+    }
 
 
 }
@@ -138,14 +166,17 @@ MainWindow::~MainWindow()
 QPixmap MainWindow::niveles(int x) //Selector de fondo
 {
     switch (x) {
+
+
     case 1:
+
 
 
          movie = new QMovie(":/Sprites/fondoFisica.gif");
          movie->start();
-         QApplication::processEvents();
-         mapascaled = movie->currentPixmap().scaled(h_limit, v_limit);
 
+         mapascaled = movie->currentPixmap().scaled(h_limit, v_limit);
+          gif->setPixmap(mapascaled);
         break;
 
     case 2:
@@ -153,72 +184,166 @@ QPixmap MainWindow::niveles(int x) //Selector de fondo
 
 
         movie = new QMovie(":/Sprites/Informatica.gif");
-       // movie->setSpeed(120);
         movie->start();
+       // movie->setSpeed(120);
+      //  movie->start();
         mapascaled = movie->currentPixmap().scaled(h_limit, v_limit);
-
+        gif->setPixmap(mapascaled);
 
         break;
     }
 
-      return mapascaled;
+    return mapascaled;
+}
+
+void MainWindow::newscene(int x )
+{
+    apples.clear();
+    books.clear();
+    pencil.clear();
+    nivel = x;
+    jugador = new player;
+    fondo = niveles(x);
+    scene = new QGraphicsScene(this);
+    scene->setSceneRect(0, 0, h_limit, v_limit);
+    scene->addRect(scene->sceneRect());
+    ui->graphicsView->setScene(scene);
+    scene->addItem(gif);
+    scene->setFocus();
+    connect(timer, SIGNAL(timeout()), scene, SLOT(update()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
+    timer->start(3);
+    ui->nivelname->setHidden(true);
+
+    ui->nota->setHidden(true);
+    ui->textonota->setHidden(true);
+
+
+    Colitime->start(2);
+
+    if(x == 1){
+        nombrenivel = "Fisica";
+        time.setHMS(0,1,0);
+        numlibros=10;
+
+        nivel1theme->setMedia(QMediaContent(QUrl("qrc:/Sonidos/physics theme.mp3")));
+        nivel1theme->setVolume(50);
+        nivel1theme->play();
+
+
+        jugador->setPos(100,425);
+        scene->addItem(jugador);
+        timerbooks->start(2000);
+        Tiemponivel->start(1000);
+        spawnapples->start(3000);
+
+    }
+
+    if(x == 2){
+        nombrenivel = "Informatica";
+        time.setHMS(0,1,0);
+        numlibros=8;
+        gravity = 2;
+
+
+        jugador->setPos(100,425);
+        scene->addItem(jugador);
+        timerbooks->start(2000);
+        Tiemponivel->start(1000);
+        spawnapples->start(3000);
+
+
+    }
+this->update();
+}
+
+void MainWindow::power()
+{
+
+
+    potencia = ampl * sin(frec * t) + ampl;
+
+t += 0.05;
+
+
+
 }
 
 void MainWindow::game()
 {
-    switch (nivel) {
+   for(lapiz* p2 : qAsConst(pencil)) {
+    for (actividad* libro : qAsConst(books)) {
+        if (p2->collidesWithItem(libro)) {
+            if(books.removeOne(libro)){
 
-    case 1:
+                delete libro;
+           }
 
-        for (lapiz* p : qAsConst(pencil)) {
-                for (apple* manzana : qAsConst(apples)) {
-                    if (p->collidesWithItem(manzana)) {
-                        // Se ha detectado una colisión entre el lápiz y la manzana
-                        cout << "Colisiona" << endl;
-                        apples.removeOne(manzana); //Elimina la manzana colisionada
-                        delete manzana;
-                       efecto = true; //Aplica el efecto
+         //  emit p->deltepencil();
 
-                }
-                    else{
-                        efecto = false;
-                    }
-            }
+            s1->play();
 
+
+             puntos += 0.5;
+
+             }
 }
+        }
+
+    switch (nivel) {
+    case 1:
+                for (apple* manzana : qAsConst(apples)) {
+                    if(jugador->collidesWithItem(manzana)){
+                        emit manzana->colision();
+                         as->play();
+                          gravity +=0.5;
+                    }
+
+
+
+                      }
+
 
 
         break;
 
+    case 2:
+        break;
     }
+
 
 }
 
 void MainWindow::generarmanzana() //Genera las manzanas
 {
 
-
-    int random = QRandomGenerator::global()->bounded(700);
-
-        apple* newApple = new apple;
-        newApple->setpos(QPointF(random,0));
+   // int random = QRandomGenerator::global()->bounded(700);
+    apple* newApple = new apple;
+    newApple->setpos(QPointF(jugador->getposx()+100,0));
         connect(timer, SIGNAL(timeout()), newApple, SLOT(actualizar()));//Timer para actualizar el movimiento de la manzana
         scene->addItem(newApple);
         apples.push_back(newApple);
         connect(newApple, SIGNAL(colision()), this, SLOT(deleteapple())); //Cada manzana generada emite una seña de colision
 
 }
+
+void MainWindow::generarlibro()
+{
+ if(bookcounter>=numlibros){
+  timerbooks->stop();
+
+ }
+ if(bookcounter<numlibros){
+    actividad* newbook = new actividad;
+    newbook->setPos(400,250);
+    connect(timer, SIGNAL(timeout()), newbook, SLOT(movimiento()));
+    connect(newbook, SIGNAL(deletebook()), this, SLOT(deletebook()));
+    scene->addItem(newbook);
+    books.push_back(newbook);
+}
+    bookcounter += 1;
+}
 //Para generar las actividades a destruir copiar el mismo esquema de la clase manzana y su funcion generar.
-
-
-
-
-
-
-//
-
-
-
 
 
 
@@ -226,47 +351,52 @@ void MainWindow::keyPressEvent(QKeyEvent *event){
     if (event->key() == Qt::Key_F4)
             close();
 if (event->key() == Qt::Key_Space){
-    disparar();
 
+disparar(jugador->getposx()+100,jugador->getposy(),potencia);
        // n->animaciones(2);
 
         //generarmanzana();
       //  n->animaciones(1);
 }
 
+if(event->key()== Qt::Key_Return){
+    newscene(nivel);
+}
+
 //Movimiento del jugador
         if (event->key() == Qt::Key_A) {
-            n->setpos(QPointF(n->getposx()-5,n->getposy()));
+
+          jugador->setpos(QPointF(jugador->getposx()-7.5,jugador->getposy()));
+            jugador->sprite(2);
         } else if (event->key() == Qt::Key_S) {
-            n->setpos(QPointF(n->getposx(),n->getposy()+5));
+    angulo -= 1;
+
+
         } else if (event->key() == Qt::Key_D) {
-           fondo = niveles(2);
-           scene->update();
-            n->setpos(QPointF(n->getposx()+5,n->getposy()));
+
+
+          jugador->setpos(QPointF(jugador->getposx()+7.5,jugador->getposy()));
+          jugador->sprite(1);
         } else if (event->key() == Qt::Key_W) {
-        n->setpos(QPointF(n->getposx(),n->getposy()-5));
+      angulo += 1;
+
         } else if (event->key() == Qt::Key_M) {//pause
             if (timer->isActive())
                 timer->stop();
             else
-                timer->start(10);
+                timer->start(2);
+
+
+
+
         }
 
-
-
+jugador->update();
+scene->update();
+qDebug() << angulo;
 
 
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event) {
-    QPointF pos = event->pos();
 
-    qDebug() << event->pos();
-
-}
-
-void MainWindow::mousePressEvent(QMouseEvent *event)
-{
- qDebug() << event->GraphicsSceneMousePress;
-}
 

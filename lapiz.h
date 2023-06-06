@@ -7,12 +7,14 @@
 #include <QPixmap>
 #include <cmath>
 #include <QTimer>
+#include <QSoundEffect>
 
 class lapiz : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
 private:
+    QSoundEffect *sonido;
     float gravedad;
     float angulo;
     bool reboteSuelo;
@@ -33,11 +35,7 @@ public:
 
        QRectF boundingRect() const;
        void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-       void setgravity();
-
-
-
-
+       void setgravity(int);
 
 
        float getposx(){
@@ -53,7 +51,11 @@ public:
        void setangle(float na){
            a = na;
        }
+       float getangle(){
+           return angulo;
+       }
 public slots:
+       void dir_pencil();
        void actualizar();
 private slots:
 signals:
