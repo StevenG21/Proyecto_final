@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/sounds"/>
+    <qresource prefix="/">
+        <file>Sonidos/physics theme.mp3</file>
+        <file>Sonidos/lapizsound.wav</file>
+        <file>Sonidos/soundbook.mp3</file>
+        <file>Sonidos/applesound.wav</file>
+        <file>Sonidos/Informaticatheme.mp3</file>
+    </qresource>
+</RCC>
