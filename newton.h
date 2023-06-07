@@ -10,7 +10,7 @@
 #include <iostream>
 
 using namespace std;
-enum animaciones {base,manzana,prisma
+enum animaciones {base,manzana,prisma,tesla
 
 
     };
@@ -19,6 +19,8 @@ class Newton : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 public:
+
+
 
      explicit Newton(QObject *parent = nullptr);
     bool end=false;

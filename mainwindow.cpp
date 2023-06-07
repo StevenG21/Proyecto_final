@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     nivel=1;
     puntos = 0;
-    angulo = 0;
+    angulo = 90;
     ampl= 25;
     frec = 0.6;
     potencia = 0;
@@ -41,13 +41,12 @@ MainWindow::MainWindow(QWidget *parent)
     timer = new QTimer;
     Tiemponivel = new QTimer;
     spawnapples = new QTimer;
- time.setHMS(0,1,0);
+    time.setHMS(0,1,0);
   //  connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
     connect(Tiemponivel, SIGNAL(timeout()), this, SLOT(cronometro()));
     connect(timerbooks, SIGNAL(timeout()), this, SLOT(generarlibro()));
-
     connect(Colitime, SIGNAL(timeout()), this, SLOT(game()));
-    connect(spawnapples, SIGNAL(timeout()), this, SLOT(generarmanzana()));
+    connect(spawnapples, SIGNAL(timeout()), this, SLOT(spawn()));
 
   //  connect(ui->graphicsView,SIGNAL(mousePressEvent()),this, SLOT(handleMousePressEvent()));
 
@@ -107,32 +106,25 @@ void MainWindow::refresh()
     gif->setPixmap(mapascaled);
 }
 
-void MainWindow::puntaje()
+void MainWindow::spawn()
 {
-  //  scene->removeItem(n);
+  n->animaciones(2);
 
 }
 
 void MainWindow::cronometro() //Tiempo por cada nivel
 {
 
-    time = time.addSecs(-1);
-     ui->cronometro->setText(time.toString("m:ss"));
 
     if(time.toString("m:ss") == "0:00"){
-        timer-> stop();
+
         bookcounter = 0;
         qDebug() << "Se acabo el tiempo";
-        nivel ++;
+     timer-> stop();
      disconnect(timer, SIGNAL(timeout()), scene, SLOT(update()));
      scene->removeItem(gif);
-         delete jugador;
-         delete scene;
-         delete movie;
 
-        nivel1theme->stop();
         ui->nivelname->setHidden(false);
-
         ui->nota->setHidden(false);
         ui->textonota->setHidden(false);
         Tiemponivel->stop();
@@ -140,22 +132,20 @@ void MainWindow::cronometro() //Tiempo por cada nivel
         timerbooks->stop();
         Colitime->stop();
         timer->stop();
-
+        delete jugador;
+        delete scene;
+        delete movie;
+    //    delete n;
         time.setHMS(0,1,0);
         ui->nivelname->setText(nombrenivel);
         QString nota = QString::number(puntos);
-         ui->nota->setText(nota);
-
-
-
+        ui->nota->setText(nota);
+        nivel ++;
 
     }
-
-
+    time = time.addSecs(-1);
+    ui->cronometro->setText(time.toString("m:ss"));
 }
-
-
-
 
 
 MainWindow::~MainWindow()
@@ -167,32 +157,22 @@ QPixmap MainWindow::niveles(int x) //Selector de fondo
 {
     switch (x) {
 
-
     case 1:
-
-
-
          movie = new QMovie(":/Sprites/fondoFisica.gif");
          movie->start();
-
          mapascaled = movie->currentPixmap().scaled(h_limit, v_limit);
-          gif->setPixmap(mapascaled);
+         gif->setPixmap(mapascaled);
         break;
 
     case 2:
-
-
-
         movie = new QMovie(":/Sprites/Informatica.gif");
         movie->start();
        // movie->setSpeed(120);
       //  movie->start();
         mapascaled = movie->currentPixmap().scaled(h_limit, v_limit);
         gif->setPixmap(mapascaled);
-
         break;
     }
-
     return mapascaled;
 }
 
@@ -202,6 +182,7 @@ void MainWindow::newscene(int x )
     books.clear();
     pencil.clear();
     nivel = x;
+    tru=false;
     jugador = new player;
     fondo = niveles(x);
     scene = new QGraphicsScene(this);
@@ -209,63 +190,65 @@ void MainWindow::newscene(int x )
     scene->addRect(scene->sceneRect());
     ui->graphicsView->setScene(scene);
     scene->addItem(gif);
+    n = new Newton;
+    scene->addItem(n);
+    connect(n, SIGNAL(endframe()), this, SLOT(generarmanzana()));
     scene->setFocus();
     connect(timer, SIGNAL(timeout()), scene, SLOT(update()));
     connect(timer, SIGNAL(timeout()), this, SLOT(refresh()));
     timer->start(3);
     ui->nivelname->setHidden(true);
-
     ui->nota->setHidden(true);
     ui->textonota->setHidden(true);
-
-
     Colitime->start(2);
 
     if(x == 1){
         nombrenivel = "Fisica";
         time.setHMS(0,1,0);
-        numlibros=10;
-
+        numlibros=30;
+        this->setporcentaje(0.1666667);
         nivel1theme->setMedia(QMediaContent(QUrl("qrc:/Sonidos/physics theme.mp3")));
-        nivel1theme->setVolume(50);
         nivel1theme->play();
-
-
         jugador->setPos(100,425);
         scene->addItem(jugador);
-        timerbooks->start(2000);
+        timerbooks->start(1000);
         Tiemponivel->start(1000);
         spawnapples->start(3000);
 
     }
 
     if(x == 2){
+        puntos=0;
+
+        nivel1theme->stop();
+        n->animaciones(3);
         nombrenivel = "Informatica";
         time.setHMS(0,1,0);
-        numlibros=8;
+        numlibros=40;
+        this->setporcentaje(0.125);
         gravity = 2;
-
-
+        nivel1theme->setMedia(QMediaContent(QUrl("qrc:/Sonidos/Informaticatheme.mp3")));
+        nivel1theme->play();
         jugador->setPos(100,425);
         scene->addItem(jugador);
-        timerbooks->start(2000);
+        timerbooks->start(800);
         Tiemponivel->start(1000);
-        spawnapples->start(3000);
-
-
+       // spawnapples->start(3000);
     }
-this->update();
+    this->update();
+}
+
+void MainWindow::setporcentaje(float p)
+{
+    porcentaje=p;
+    this->update();
 }
 
 void MainWindow::power()
 {
-
-
     potencia = ampl * sin(frec * t) + ampl;
 
 t += 0.05;
-
-
 
 }
 
@@ -278,13 +261,13 @@ void MainWindow::game()
 
                 delete libro;
            }
+    gravity -=0.1;
 
-         //  emit p->deltepencil();
 
             s1->play();
 
 
-             puntos += 0.5;
+             puntos += porcentaje; // Puntos
 
              }
 }
@@ -299,24 +282,24 @@ void MainWindow::game()
                           gravity +=0.5;
                     }
 
-
-
                       }
-
-
-
         break;
 
     case 2:
         break;
     }
 
+    if(puntos>=4.9 && tru==false){
+
+        Tiemponivel->start(200);
+        tru=true;
+
+    }
 
 }
 
 void MainWindow::generarmanzana() //Genera las manzanas
 {
-
    // int random = QRandomGenerator::global()->bounded(700);
     apple* newApple = new apple;
     newApple->setpos(QPointF(jugador->getposx()+100,0));
@@ -335,7 +318,7 @@ void MainWindow::generarlibro()
  }
  if(bookcounter<numlibros){
     actividad* newbook = new actividad;
-    newbook->setPos(400,250);
+    newbook->setPos(0,150);
     connect(timer, SIGNAL(timeout()), newbook, SLOT(movimiento()));
     connect(newbook, SIGNAL(deletebook()), this, SLOT(deletebook()));
     scene->addItem(newbook);
@@ -366,29 +349,25 @@ if(event->key()== Qt::Key_Return){
 //Movimiento del jugador
         if (event->key() == Qt::Key_A) {
 
-          jugador->setpos(QPointF(jugador->getposx()-7.5,jugador->getposy()));
+          jugador->setpos(QPointF(jugador->getposx()-8,jugador->getposy()));
             jugador->sprite(2);
         } else if (event->key() == Qt::Key_S) {
-    angulo -= 1;
+    angulo -= 2;
 
 
         } else if (event->key() == Qt::Key_D) {
 
 
-          jugador->setpos(QPointF(jugador->getposx()+7.5,jugador->getposy()));
+          jugador->setpos(QPointF(jugador->getposx()+8,jugador->getposy()));
           jugador->sprite(1);
         } else if (event->key() == Qt::Key_W) {
-      angulo += 1;
+      angulo += 2;
 
         } else if (event->key() == Qt::Key_M) {//pause
             if (timer->isActive())
                 timer->stop();
             else
                 timer->start(2);
-
-
-
-
         }
 
 jugador->update();

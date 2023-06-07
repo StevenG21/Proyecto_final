@@ -6,10 +6,11 @@
 Newton::Newton(QObject *parent) : QObject(parent)
 
 {
-    movie = new QMovie(":/Sprites/base.gif");
+
+ movie = new QMovie(":/Sprites/base.gif");
  frame = movie->frameCount();
  cout << "frames: "<<frame<<endl;
-    pos = QPointF(600,500-150);
+    pos = QPointF(0,500-150);
     movie->start();
     pixmap = movie->currentPixmap().scaled(alto, ancho);
     a=base;
@@ -38,6 +39,7 @@ void Newton::animaciones(int x)
 {
     switch (x) {
     case 1:
+        movie->stop();
         delete movie;
         end = false;
         a = base;
@@ -49,6 +51,7 @@ void Newton::animaciones(int x)
         break;
 
     case 2:
+        movie->stop();
         delete movie;
         end = false;
         a = manzana;
@@ -57,8 +60,18 @@ void Newton::animaciones(int x)
         movie->setSpeed(120);
          movie->start();
         pixmap = movie->currentPixmap().scaled(alto, ancho);
+        break;
 
-
+    case 3:
+        movie->stop();
+        delete movie;
+        end = false;
+        a = tesla;
+        movie = new QMovie(":/Sprites/elprofe.gif");
+        frame = movie->frameCount();
+        movie->setSpeed(120);
+         movie->start();
+        pixmap = movie->currentPixmap().scaled(alto, ancho);
         break;
     }
 
@@ -85,8 +98,8 @@ void Newton::update()
 
         break;
 
-    case prisma:
-
+    case tesla:
+    pixmap = movie->currentPixmap().scaled(alto,ancho);
         break;
 
     }

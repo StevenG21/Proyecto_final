@@ -83,7 +83,7 @@ void lapiz::actualizar()  //Funcion donde se genera el movimiento
 
   if(pos.y()<0.1+imagen.width()){    //Rebotes
      t=0;
-     vely = vely*0.5; //Coeficiente de rebote
+     vely = vely*0.6; //Coeficiente de rebote
      velx = velx*0.6; //Coeficiente de friccion
      posini.setY(pos.y());
      posini.setX(pos.x());
@@ -93,16 +93,16 @@ void lapiz::actualizar()  //Funcion donde se genera el movimiento
 
 
 
-if((velx<=0.1) && (vely<=0.1)){
-   //Detiene el timer y emita una señal para eliminar el proyectil
+  if((velx<=0.1) && (vely<=0.1)){
+     //Detiene el timer y emita una señal para eliminar el proyectil
 
-    emit deltepencil();
+      emit deltepencil();
 }
 
 if(pos.x()<=0.1){
 
     t=0;
-    vely = vely*0.5; //Coeficiente de rebote
+    vely = vely*0.6; //Coeficiente de rebote
     velx = velx*0.6; //Coeficiente de friccion
     posini.setY(pos.y());
     posini.setX(pos.x());
@@ -113,7 +113,7 @@ if(pos.x()<=0.1){
 if(pos.x()>=800-imagen.width()){
 
     t=0;
-    vely = vely*0.5; //Coeficiente de rebote
+    vely = vely*0.6; //Coeficiente de rebote
     velx = -velx*0.4; //Coeficiente de friccion
     posini.setY(pos.y());
     posini.setX(pos.x());

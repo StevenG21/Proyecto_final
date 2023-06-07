@@ -43,7 +43,7 @@ public:
 
 private:
     QString nombrenivel;
-    float ampl,frec;
+    float ampl,frec,porcentaje;
     float  t;
     int potencia;
 QMediaPlayer* nivel1theme;
@@ -72,10 +72,11 @@ int bookcounter;
     QMovie *movie;
     QTime time;
     int nivel = 1;
-    bool efecto;
+    bool efecto,tru;
     float angulo;
     float gravity;
     void newscene(int x);
+    void setporcentaje(float);
     QGraphicsPixmapItem *gif;
     QGraphicsScene *scene;
     QGraphicsScene *nivel2;
@@ -90,7 +91,7 @@ public slots:
        void deletebook();
        void deletepencil();
        void refresh();
-       void puntaje();
+       void spawn();
        void cronometro();
     //   void nivel1();
       // void nivel2();
